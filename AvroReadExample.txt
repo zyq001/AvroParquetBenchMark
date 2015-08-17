@@ -1,0 +1,10 @@
+import com.youdao.quipu.avro.schema.EadPv
+import org.apache.avro.mapred.{AvroInputFormat,AvroWrapper}
+import org.apache.hadoop.io.NullWritable;
+
+ val pv = sc.hadoopFile[AvroWrapper[EadPv],NullWritable,AvroInputFormat[EadPv]]("/quipu/camus/data/pv_eadu/hourly/2015/01/26/*/*")
+
+ pv26.filter(r => r._1.datum().getSyndId()==16).first._1.datum
+ pv26.filter(r => r._1.datum().getSyndId()==16 && r._1.datum().getAdType.toString == "TEXT").first
+
+ pv26.map(x=> (x._1.datum.getSlotSize.toString,1)).reduceByKey(_+_).collect.foreach(print)
