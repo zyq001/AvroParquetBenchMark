@@ -1,1 +1,4 @@
 # AvroParquetBenchMark 
+Parquet是面向分析型业务的列式存储格式，由Twitter和Cloudera合作开发，2015年5月从Apache的孵化器里毕业成为Apache顶级项目，细节请参考http://parquet.apache.org/documentation/latest/。
+Parquet现在为Twitter至少节省了1/3的存储空间，同时节省了大量的表扫描和反序列化的时间
+鉴于Parquet的优势和对Avro的兼容，将HDFS上的存储格式改为Paruqet，并且只需做很小的改动就用原读取Avro的API读取Parquet，单列查询效率可以提高近一个数量级。
