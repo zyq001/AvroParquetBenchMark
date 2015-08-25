@@ -1,0 +1,116 @@
+<!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on https://github.com/jonrohan -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" href="stylesheets/github-dark.css">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
+
+  <title>Avro VS Parquet benchmarks</title>
+  <meta name="description" content="A Read&amp;Count Benchmark of Parquet &amp; Avro using spark.">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">Avro VS Parquet benchmarks</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">A Read&amp;Count Benchmark of Parquet &amp; Avro using spark.</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/zyq001/AvroParquetBenchMark/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/zyq001/AvroParquetBenchMark/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/zyq001/AvroParquetBenchMark" class="code">View Avro VS Parquet benchmarks on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <h3>
+<a id="关于parquet" class="anchor" href="#%E5%85%B3%E4%BA%8Eparquet" aria-hidden="true"><span class="octicon octicon-link"></span></a>关于Parquet</h3>
+
+<p>Parquet是面向分析型业务的列式存储格式，由Twitter和Cloudera合作开发，2015年5月从Apache的孵化器里毕业成为Apache顶级项目，细节请参考<a href="http://parquet.apache.org/documentation/latest/%E3%80%82">http://parquet.apache.org/documentation/latest/。</a></p>
+
+<h2>
+<a id="列式存储" class="anchor" href="#%E5%88%97%E5%BC%8F%E5%AD%98%E5%82%A8" aria-hidden="true"><span class="octicon octicon-link"></span></a>列式存储</h2>
+
+<p>列式存储和行式存储相比有哪些优势呢？</p>
+
+<p>可以跳过不符合条件的数据，只读取需要的数据，降低IO数据量。
+压缩编码可以降低磁盘存储空间。由于同一列的数据类型是一样的，可以使用更高效的压缩编码（例如Run Length Encoding和Delta Encoding）进一步节约存储空间。
+只读取需要的列，支持向量运算，能够获取更好的扫描性能。
+适配多种计算框架</p>
+
+<p>Parquet是语言无关的，而且不与任何一种数据处理框架绑定在一起，适配多种语言和组件，能够与Parquet配合的组件有：</p>
+
+<p>查询引擎: Hive, Impala, Pig, Presto, Drill, Tajo, HAWQ, IBM Big SQL</p>
+
+<p>计算框架: MapReduce, Spark, Cascading, Crunch, Scalding, Kite</p>
+
+<p>数据模型: Avro, Thrift, Protocol Buffers, POJOs</p>
+
+<h2>
+<a id="性能" class="anchor" href="#%E6%80%A7%E8%83%BD" aria-hidden="true"><span class="octicon octicon-link"></span></a>性能</h2>
+
+<p>Parquet就是基于Google的Dremel系统的数据模型和算法实现的。核心思想是使用“record shredding and assembly algorithm”来表示复杂的嵌套数据类型，同时辅以按列的高效压缩和编码技术，实现降低存</p>
+
+<p>储空间，提高IO效率，降低上层应用延迟。</p>
+
+<p>Parquet列式存储带来的性能上的提高在业内已经得到了充分的认可，特别是当你们的表非常宽（column非常多）的时候，Parquet无论在资源利用率还是性能上都优势明显。具体的性能指标详见参考文档。</p>
+
+<p>Spark已经将Parquet设为默认的文件存储格式，Cloudera投入了很多工程师到Impala+Parquet相关开发中，Hive/Pig都原生支持Parquet。Parquet现在为Twitter至少节省了1/3的存储空间，同时节省了大量的表</p>
+
+<p>扫描和反序列化的时间。这两方面直接反应就是节约成本和提高性能（详见benchmark）。</p>
+
+<h3>
+<a id="benchmark" class="anchor" href="#benchmark" aria-hidden="true"><span class="octicon octicon-link"></span></a>benchmark</h3>
+
+<p>以邮箱的展示日志为例，比较了Avro和Parquet两种存储格式的性能：camus-2015/05/24的日志，5,361,809条记录，hadoop2.4，Spark1.3.1。
+结果详见： <a href="http://blog.csdn.net/zyq12345678/article/details/47725461">http://blog.csdn.net/zyq12345678/article/details/47725461</a></p>
+
+<p>备注：1. 测试代码详见AvroParquetBenchMark 2. 读取Avro是新老API性能差距较大，目前还未找到原因。</p>
+
+<h3>
+<a id="与avro" class="anchor" href="#%E4%B8%8Eavro" aria-hidden="true"><span class="octicon octicon-link"></span></a>与Avro</h3>
+
+<p>之前新统计系统（Quipu）的日志都是用Avro做序列化和存储，鉴于Parquet的优势和对Avro的兼容，将HDFS上的存储格式改为Paruqet，并且只需做很小的改动就用原读取Avro的API读取Parquet，单列查询效率可</p>
+
+<p>以提高近一个数量级。</p>
+
+<h2>
+<a id="schema" class="anchor" href="#schema" aria-hidden="true"><span class="octicon octicon-link"></span></a>Schema</h2>
+
+<p>Parquet文件尾部存储了文件的元数据信息和统计信息，自描述的，方便解析。</p>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/zyq001" class="avatar"><img src="https://avatars3.githubusercontent.com/u/7960619?v=3&amp;s=60" width="48" height="48"></a> <a href="https://github.com/zyq001">zyq001</a> maintains <a href="https://github.com/zyq001/AvroParquetBenchMark">Avro VS Parquet benchmarks</a></p>
+
+
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/zyq001/AvroParquetBenchMark/tarball/master" class="tar">tar</a><a href="https://github.com/zyq001/AvroParquetBenchMark/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
+
+  
+</body>
+</html>
